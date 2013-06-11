@@ -18,7 +18,8 @@ L.Control.Coordinates = L.Control.extend({
 		//switch on/off input fields on click
 		enableUserInput: true,
 		//use Degree-Minute-Second
-		useDMS: false
+		useDMS: false,
+		useProj4: false
 	},
 
 	onAdd: function(map) {
@@ -51,6 +52,10 @@ L.Control.Coordinates = L.Control.extend({
 		//wether or not to show inputs on click
 		if (options.enableUserInput) {
 			L.DomEvent.addListener(this._container, "click", this._switchUI, this);
+		}
+
+		if (options.useProj4 && typeof(Proj4js) === "undefined") {
+			throw new Error('Control.Coordinates "useProj4" requires Proj4js. Download latest from http://trac.osgeo.org/proj4js/wiki/Download .');
 		}
 
 		return container;
@@ -126,18 +131,32 @@ L.Control.Coordinates = L.Control.extend({
 	_createCoordinateLabel: function(ll) {
 		var opts = this.options,
 			x, y;
+
+		if (opts.useProj4 && typeof(Proj4js) !== "undefined") {
+			opts.useDMS = false;
+
+			var prj_src = new Proj4js.Proj("EPSG:4326");
+			var prj_dst = new Proj4js.Proj(opts.useProj4);
+			var pt = new Proj4js.Point(ll.lng, ll.lat);
+			Proj4js.transform(prj_src, prj_dst, pt);
+
+			x = pt.x; y = pt.y;
+		} else {
+			x = ll.lng; y = ll.lat;
+		}
+
 		if (opts.labelFormatterLng) {
-			x = opts.labelFormatterLng(ll.lng);
+			x = opts.labelFormatterLng(x);
 		} else {
 			x = L.Util.template(opts.labelTemplateLng, {
-				x: this._getNumber(ll.lng, opts)
+				x: this._getNumber(x, opts)
 			});
 		}
 		if (opts.labelFormatterLat) {
-			y = opts.labelFormatterLng(ll.lat);
+			y = opts.labelFormatterLat(y);
 		} else {
 			y = L.Util.template(opts.labelTemplateLat, {
-				y: this._getNumber(ll.lat, opts)
+				y: this._getNumber(y, opts)
 			});
 		}
 		return x + " " + y;
@@ -150,7 +169,7 @@ L.Control.Coordinates = L.Control.extend({
 		var res;
 		if (opts.useDMS) {
 			res = L.NumberFormatter.toDMS(n);
-		} else {
+		} else  {
 			res = L.NumberFormatter.round(n, opts.decimals, opts.decimalSeperator);
 		}
 		return res;
