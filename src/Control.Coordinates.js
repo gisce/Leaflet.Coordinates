@@ -12,7 +12,7 @@ L.Control.Coordinates = L.Control.extend({
 		//label templates for usage if no labelFormatter function is defined
 		labelTemplateLat: "Lat: {y}",
 		labelTemplateLng: "Lng: {x}",
-		//label formatter functions 
+		//label formatter functions
 		labelFormatterLat: undefined,
 		labelFormatterLng: undefined,
 		//switch on/off input fields on click
@@ -24,14 +24,13 @@ L.Control.Coordinates = L.Control.extend({
 	onAdd: function(map) {
 		this._map = map;
 
-		var className = 'leaflet-control-coordinates',
+		var className = 'leaflet-control-coordinates leaflet-bar',
 			container = this._container = L.DomUtil.create('div', className),
 			options = this.options;
 
 		//label containers
 		this._labelcontainer = L.DomUtil.create("div", "uiElement label", container);
 		this._label = L.DomUtil.create("span", "labelFirst", this._labelcontainer);
-
 
 		//input containers
 		this._inputcontainer = L.DomUtil.create("div", "uiElement input uiHidden", container);
