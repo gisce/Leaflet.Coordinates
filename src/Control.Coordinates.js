@@ -12,14 +12,13 @@ L.Control.Coordinates = L.Control.extend({
 		//label templates for usage if no labelFormatter function is defined
 		labelTemplateLat: "Lat: {y}",
 		labelTemplateLng: "Lng: {x}",
-		//label formatter functions
+		//label formatter functions 
 		labelFormatterLat: undefined,
 		labelFormatterLng: undefined,
 		//switch on/off input fields on click
 		enableUserInput: true,
 		//use Degree-Minute-Second
 		useDMS: false,
-		useProj4: false,
 		//if true lat-lng instead of lng-lat label ordering is used
 		useLatLngOrder: false,
 		//if true user given coordinates are centered directly
@@ -29,13 +28,14 @@ L.Control.Coordinates = L.Control.extend({
 	onAdd: function(map) {
 		this._map = map;
 
-		var className = 'leaflet-control-coordinates leaflet-bar',
+		var className = 'leaflet-control-coordinates',
 			container = this._container = L.DomUtil.create('div', className),
 			options = this.options;
 
 		//label containers
 		this._labelcontainer = L.DomUtil.create("div", "uiElement label", container);
 		this._label = L.DomUtil.create("span", "labelFirst", this._labelcontainer);
+
 
 		//input containers
 		this._inputcontainer = L.DomUtil.create("div", "uiElement input uiHidden", container);
@@ -67,10 +67,6 @@ L.Control.Coordinates = L.Control.extend({
 		//wether or not to show inputs on click
 		if (options.enableUserInput) {
 			L.DomEvent.addListener(this._container, "click", this._switchUI, this);
-		}
-
-		if (options.useProj4 && typeof(Proj4js) === "undefined") {
-			throw new Error('Control.Coordinates "useProj4" requires Proj4js. Download latest from http://trac.osgeo.org/proj4js/wiki/Download .');
 		}
 
 		return container;
@@ -150,32 +146,18 @@ L.Control.Coordinates = L.Control.extend({
 	_createCoordinateLabel: function(ll) {
 		var opts = this.options,
 			x, y;
-
-		if (opts.useProj4 && typeof(Proj4js) !== "undefined") {
-			opts.useDMS = false;
-
-			var prj_src = new Proj4js.Proj("EPSG:4326");
-			var prj_dst = new Proj4js.Proj(opts.useProj4);
-			var pt = new Proj4js.Point(ll.lng, ll.lat);
-			Proj4js.transform(prj_src, prj_dst, pt);
-
-			x = pt.x; y = pt.y;
-		} else {
-			x = ll.lng; y = ll.lat;
-		}
-
 		if (opts.labelFormatterLng) {
-			x = opts.labelFormatterLng(x);
+			x = opts.labelFormatterLng(ll.lng);
 		} else {
 			x = L.Util.template(opts.labelTemplateLng, {
-				x: this._getNumber(x, opts)
+				x: this._getNumber(ll.lng, opts)
 			});
 		}
 		if (opts.labelFormatterLat) {
-			y = opts.labelFormatterLat(y);
+			y = opts.labelFormatterLat(ll.lat);
 		} else {
 			y = L.Util.template(opts.labelTemplateLat, {
-				y: this._getNumber(y, opts)
+				y: this._getNumber(ll.lat, opts)
 			});
 		}
 		if (opts.useLatLngOrder) {
@@ -191,7 +173,7 @@ L.Control.Coordinates = L.Control.extend({
 		var res;
 		if (opts.useDMS) {
 			res = L.NumberFormatter.toDMS(n);
-		} else  {
+		} else {
 			res = L.NumberFormatter.round(n, opts.decimals, opts.decimalSeperator);
 		}
 		return res;
