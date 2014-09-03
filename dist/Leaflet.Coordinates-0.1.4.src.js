@@ -18,7 +18,11 @@ L.Control.Coordinates = L.Control.extend({
 		//switch on/off input fields on click
 		enableUserInput: true,
 		//use Degree-Minute-Second
-		useDMS: false
+		useDMS: false,
+		//if true lat-lng instead of lng-lat label ordering is used
+		useLatLngOrder: false,
+		//if true user given coordinates are centered directly
+		centerUserCoordinates:false
 	},
 
 	onAdd: function(map) {
@@ -35,10 +39,21 @@ L.Control.Coordinates = L.Control.extend({
 
 		//input containers
 		this._inputcontainer = L.DomUtil.create("div", "uiElement input uiHidden", container);
-		L.DomUtil.create("span", "", this._inputcontainer).innerHTML = options.labelTemplateLng.replace("{x}", "");
-		this._inputX = this._createInput("inputX", this._inputcontainer);
-		L.DomUtil.create("span", "", this._inputcontainer).innerHTML = options.labelTemplateLat.replace("{y}", "");
-		this._inputY = this._createInput("inputY", this._inputcontainer);
+		var xSpan, ySpan;
+		if (options.useLatLngOrder) {
+			ySpan = L.DomUtil.create("span", "", this._inputcontainer);
+			this._inputY = this._createInput("inputY", this._inputcontainer);
+			xSpan = L.DomUtil.create("span", "", this._inputcontainer);
+			this._inputX = this._createInput("inputX", this._inputcontainer);
+		} else {
+			xSpan = L.DomUtil.create("span", "", this._inputcontainer);
+			this._inputX = this._createInput("inputX", this._inputcontainer);
+			ySpan = L.DomUtil.create("span", "", this._inputcontainer);
+			this._inputY = this._createInput("inputY", this._inputcontainer);
+		}
+		xSpan.innerHTML = options.labelTemplateLng.replace("{x}", "");
+		ySpan.innerHTML = options.labelTemplateLat.replace("{y}", "");
+
 		L.DomEvent.on(this._inputX, 'keyup', this._handleKeypress, this);
 		L.DomEvent.on(this._inputY, 'keyup', this._handleKeypress, this);
 
@@ -101,8 +116,12 @@ L.Control.Coordinates = L.Control.extend({
 				marker = this._marker = L.marker();
 				marker.on("click", this._clearMarker, this);
 			}
-			marker.setLatLng(new L.LatLng(y, x));
+			var ll=new L.LatLng(y, x);
+			marker.setLatLng(ll);
 			marker.addTo(this._map);
+			if (this.options.centerUserCoordinates){
+				this._map.setView(ll,this._map.getZoom());
+			}
 		}
 	},
 
@@ -135,11 +154,14 @@ L.Control.Coordinates = L.Control.extend({
 			});
 		}
 		if (opts.labelFormatterLat) {
-			y = opts.labelFormatterLng(ll.lat);
+			y = opts.labelFormatterLat(ll.lat);
 		} else {
 			y = L.Util.template(opts.labelTemplateLat, {
 				y: this._getNumber(ll.lat, opts)
 			});
+		}
+		if (opts.useLatLngOrder) {
+			return y + " " + x;
 		}
 		return x + " " + y;
 	},
@@ -230,6 +252,7 @@ L.Control.Coordinates = L.Control.extend({
 		var pos = evt.latlng,
 			opts = this.options;
 		if (pos) {
+			pos = pos.wrap();
 			this._currentPos = pos;
 			this._inputY.value = L.NumberFormatter.round(pos.lat, opts.decimals, opts.decimalSeperator);
 			this._inputX.value = L.NumberFormatter.round(pos.lng, opts.decimals, opts.decimalSeperator);
