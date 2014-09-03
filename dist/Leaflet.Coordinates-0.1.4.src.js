@@ -12,7 +12,7 @@ L.Control.Coordinates = L.Control.extend({
 		//label templates for usage if no labelFormatter function is defined
 		labelTemplateLat: "Lat: {y}",
 		labelTemplateLng: "Lng: {x}",
-		//label formatter functions 
+		//label formatter functions
 		labelFormatterLat: undefined,
 		labelFormatterLng: undefined,
 		//switch on/off input fields on click
@@ -147,14 +147,14 @@ L.Control.Coordinates = L.Control.extend({
 		var opts = this.options,
 			x, y;
 		if (opts.labelFormatterLng) {
-			x = opts.labelFormatterLng(ll.lng);
+			x = opts.labelFormatterLng(ll.lng,ll.lat);
 		} else {
 			x = L.Util.template(opts.labelTemplateLng, {
 				x: this._getNumber(ll.lng, opts)
 			});
 		}
 		if (opts.labelFormatterLat) {
-			y = opts.labelFormatterLat(ll.lat);
+			y = opts.labelFormatterLat(ll.lng,ll.lat);
 		} else {
 			y = L.Util.template(opts.labelTemplateLat, {
 				y: this._getNumber(ll.lat, opts)
