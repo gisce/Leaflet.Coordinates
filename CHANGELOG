@@ -1,0 +1,37 @@
+2015-01-06 - 0.1.5 (dc69223)
+dc69223 (HEAD, master) correct the setup of numberFormatter
+6e9dd4c convert numberformatter to common.js
+d7e6b18 (origin/master, origin/HEAD) get rid of unwanted files
+74c04ab Small modification to "labelFormatterLat" & "labelFormatterLng" : send Latitude AND Longitude (ability to use Proj4)
+709c393 Reset to MrMufflon version
+d4c982b Merge remote-tracking branch 'upstream/master'
+002b0b8 Add Proj4 capabitities
+1ccc596 Add class "leaflet-bar" for box-shadow
+83e6204 Refacotring and formatting. Added CSSLint task.
+cf25860 Replace "map" by "this._map", thanks jbelien
+e0c6314 updated build version
+73b566a fixed remove link page reload bug
+8623fd0 new dev version and readme update
+de40868 (tag: 0.1.2) DMS release 0.1.2
+704a557 cleanup, refactoring and added linting for js
+3a48aeb Update README.md
+762da63 added screenshots to readme
+15bc9f3 updated license and readme
+54d6200 new version 0.1.2-SNAPSHOT after release
+d1ae43d (tag: 0.1.1) latest dist version
+daceb7a remove mousemove listener if panel is opened
+996fc09 Update README.md
+8917543 corrected url
+fa0bea8 new demo page
+ac3628d dist folder with build files
+75696b9 added grunt build and package json
+3b5c7d7 (tag: 0.1.0) permanent marker on enter
+142a557 typo
+aca888b updated readme
+4028bb1 added css styles and configurable jump to coordinate funcitonality
+4775993 readme update
+03ece06 license and second showcase
+5983dee initial comitt and first draft
+93a7925 Initial commit
+
+
