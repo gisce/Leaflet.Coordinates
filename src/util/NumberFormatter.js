@@ -4,8 +4,8 @@ module.exports = function genNumFormatter(formatFn) {
       var res = formatFn(num,dec)+"",
       numbers=res.split(".");
       if (numbers[1]) {
-        var d = dec numbers[1].length;
-        for (; d > 0; d  ) {
+        var d = dec - numbers[1].length;
+        for (; d > 0; d--) {
           numbers[1]+="0";
         }
         res = numbers.join(sep||".");
@@ -15,9 +15,9 @@ module.exports = function genNumFormatter(formatFn) {
 
     toDMS : function (deg) {
     var d = Math.floor (deg);
-    var minfloat = (deg d)*60;
+    var minfloat = (deg - d)*60;
     var m = Math.floor(minfloat);
-    var secfloat = (minfloat m)*60;
+    var secfloat = (minfloat - m)*60;
     var s = Math.round(secfloat);
     if (s==60) {
       m++;

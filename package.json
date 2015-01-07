@@ -1,16 +1,13 @@
 {
   "name": "Leaflet.Coordinates",
-  "version": "0.1.5",
+  "version": "0.1.4",
   "description": "A Leaflet plugin to view coordinates",
   "devDependencies": {
     "grunt": "~0.4.1",
-    "grunt-contrib-clean": "~0.4.1",
-    "grunt-contrib-concat": "~0.3.0",
     "grunt-contrib-csslint": "~0.1.2",
-    "grunt-contrib-cssmin": "~0.6.1",
-    "grunt-contrib-jshint": "^0.10.0",
-    "grunt-contrib-uglify": "~0.2.2"
+    "grunt-contrib-jshint": "^0.10.0"
   },
+  "main": "src/Control.Coordinates.js",
   "scripts": {
     "build": "grunt"
   },

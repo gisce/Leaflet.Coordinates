@@ -1,4 +1,3 @@
-
 var NumberFormatter = require("./util/NumberFormatter");
 
 module.exports = {
@@ -262,8 +261,8 @@ module.exports = {
         if (pos) {
           pos = pos.wrap();
           this._currentPos = pos;
-          this._inputY.value = L.numberFormatter.round(pos.lat, opts.decimals, opts.decimalSeperator);
-          this._inputX.value = L.numberFormatter.round(pos.lng, opts.decimals, opts.decimalSeperator);
+          this._inputY.value = numberFormatter.round(pos.lat, opts.decimals, opts.decimalSeperator);
+          this._inputX.value = numberFormatter.round(pos.lng, opts.decimals, opts.decimalSeperator);
           this._label.innerHTML = this._createCoordinateLabel(pos);
         }
       }
