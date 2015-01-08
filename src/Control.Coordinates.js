@@ -16,6 +16,9 @@ module.exports = {
         decimals: 4,
         //decimalseperator used if not using DMS or labelFormatter functions
         decimalSeperator: ".",
+        //funciton for converting coordinates
+        // params: lng:float, lat:float, reverse:boolean
+        coordinateConverter: undefined,
         //label templates for usage if no labelFormatter function is defined
         labelTemplateLat: "Lat: {y}",
         labelTemplateLng: "Lng: {x}",
@@ -29,7 +32,8 @@ module.exports = {
         //if true lat-lng instead of lng-lat label ordering is used
         useLatLngOrder: false,
         //if true user given coordinates are centered directly
-        centerUserCoordinates:false
+        centerUserCoordinates:false,
+        leafletImagesPath: "/assets/images/"
       },
 
       onAdd: function(map) {
@@ -43,23 +47,17 @@ module.exports = {
         this._labelcontainer = L.DomUtil.create("div", "uiElement label", container);
         this._label = L.DomUtil.create("span", "labelFirst", this._labelcontainer);
 
+        L.Icon.Default.imagePath = options.leafletImagesPath;
 
         //input containers
         this._inputcontainer = L.DomUtil.create("div", "uiElement input uiHidden", container);
-        var xSpan, ySpan;
         if (options.useLatLngOrder) {
-          ySpan = L.DomUtil.create("span", "", this._inputcontainer);
           this._inputY = this._createInput("inputY", this._inputcontainer);
-          xSpan = L.DomUtil.create("span", "", this._inputcontainer);
           this._inputX = this._createInput("inputX", this._inputcontainer);
         } else {
-          xSpan = L.DomUtil.create("span", "", this._inputcontainer);
           this._inputX = this._createInput("inputX", this._inputcontainer);
-          ySpan = L.DomUtil.create("span", "", this._inputcontainer);
           this._inputY = this._createInput("inputY", this._inputcontainer);
         }
-        xSpan.innerHTML = options.labelTemplateLng.replace("{x}", "");
-        ySpan.innerHTML = options.labelTemplateLat.replace("{y}", "");
 
         L.DomEvent.on(this._inputX, 'keyup', this._handleKeypress, this);
         L.DomEvent.on(this._inputY, 'keyup', this._handleKeypress, this);
@@ -97,6 +95,7 @@ module.exports = {
       *  Called onkeyup of input fields
       */
       _handleKeypress: function(e) {
+        console.log('keypress');
         switch (e.keyCode) {
           case 27: //Esc
             this.collapse();
@@ -105,9 +104,9 @@ module.exports = {
             this._handleSubmit();
             this.collapse();
             break;
-          default: //All keys
-            this._handleSubmit();
-            break;
+          //default: //All keys
+          //  this._handleSubmit();
+          //  break;
         }
       },
 
@@ -117,13 +116,21 @@ module.exports = {
       _handleSubmit: function() {
         var x = numberFormatter.createValidNumber(this._inputX.value, this.options.decimalSeperator);
         var y = numberFormatter.createValidNumber(this._inputY.value, this.options.decimalSeperator);
+        var marker;
+        var ll;
         if (x !== undefined && y !== undefined) {
-          var marker = this._marker;
+          marker = this._marker;
           if (!marker) {
             marker = this._marker = L.marker();
             marker.on("click", this._clearMarker, this);
           }
-          var ll=new L.LatLng(y, x);
+
+          if (this.options.coordinateConverter) {
+            coords = this.options.coordinateConverter(x, y, true);
+            ll=new L.LatLng(coords.y, coords.x);
+          } else {
+            ll=new L.LatLng(y, x);
+          }
           marker.setLatLng(ll);
           marker.addTo(this._map);
           if (this.options.centerUserCoordinates){
@@ -155,6 +162,10 @@ module.exports = {
           x, y;
         if (opts.labelFormatterLng) {
           x = opts.labelFormatterLng(ll.lng,ll.lat);
+        } else if (opts.coordinateConverter) {
+          x = L.Util.template(opts.labelTemplateLng, {
+            x: opts.coordinateConverter(ll.lng, ll.lat).x
+          });
         } else {
           x = L.Util.template(opts.labelTemplateLng, {
             x: this._getNumber(ll.lng, opts)
@@ -162,6 +173,10 @@ module.exports = {
         }
         if (opts.labelFormatterLat) {
           y = opts.labelFormatterLat(ll.lng,ll.lat);
+        } else if (opts.coordinateConverter) {
+          y = L.Util.template(opts.labelTemplateLat, {
+            y: opts.coordinateConverter(ll.lng, ll.lat).y
+          });
         } else {
           y = L.Util.template(opts.labelTemplateLat, {
             y: this._getNumber(ll.lat, opts)
@@ -207,7 +222,7 @@ module.exports = {
             m.setLatLng(ll);
 
             var container = L.DomUtil.create("div", "");
-            var label = L.DomUtil.create("div", "", container);
+            var label = L.DomUtil.create("div", "coordinate-label", container);
             label.innerHTML = this._createCoordinateLabel(ll);
 
             var close = L.DomUtil.create("a", "", container);
@@ -261,8 +276,8 @@ module.exports = {
         if (pos) {
           pos = pos.wrap();
           this._currentPos = pos;
-          this._inputY.value = numberFormatter.round(pos.lat, opts.decimals, opts.decimalSeperator);
-          this._inputX.value = numberFormatter.round(pos.lng, opts.decimals, opts.decimalSeperator);
+          this._inputY.value = opts.coordinateConverter ? opts.coordinateConverter(pos.lng, pos.lat).y : numberFormatter.round(pos.lat, opts.decimals, opts.decimalSeperator);
+          this._inputX.value = opts.coordinateConverter ? opts.coordinateConverter(pos.lng, pos.lat).x : numberFormatter.round(pos.lng, opts.decimals, opts.decimalSeperator);
           this._label.innerHTML = this._createCoordinateLabel(pos);
         }
       }
