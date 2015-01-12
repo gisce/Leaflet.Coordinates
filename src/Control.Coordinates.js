@@ -59,6 +59,7 @@ module.exports = {
           this._inputY = this._createInput("inputY", this._inputcontainer);
         }
 
+        L.DomEvent.on(this._inputcontainer, 'keydown', this._handleTab, this);
         L.DomEvent.on(this._inputX, 'keyup', this._handleKeypress, this);
         L.DomEvent.on(this._inputY, 'keyup', this._handleKeypress, this);
 
@@ -92,10 +93,24 @@ module.exports = {
       },
 
       /**
+      *  Called onkeydown of input field container
+      */
+      _handleTab: function(e) {
+        if (e.keycode === 9 ) {
+          L.DomEvent.stop(e);
+
+          if (e.target.className === "inputX") {
+            this._inputY.focus();
+          } else if (e.target.className === "inputY") {
+            this._inputX.focus();
+          }
+        }
+      },
+
+      /**
       *  Called onkeyup of input fields
       */
       _handleKeypress: function(e) {
-        console.log('keypress');
         switch (e.keyCode) {
           case 27: //Esc
             this.collapse();
