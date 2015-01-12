@@ -1,3 +1,8 @@
+2015-01-12 - 0.1.8 (ab079a8)
+ab079a8 (HEAD, origin/master, origin/HEAD, master) handle tabbing between inputs
+3bf8d9b (tag: v0.1.7) 0.1.7
+
+
 2015-01-07 - 0.1.7 (9544d55)
 9544d55 (HEAD, origin/master, origin/HEAD, master) cleaning things up; adding support for coordinate conversion
 65f828c (tag: v0.1.6) 0.1.6
