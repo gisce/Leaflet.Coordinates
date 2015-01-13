@@ -96,9 +96,8 @@ module.exports = {
       *  Called onkeydown of input field container
       */
       _handleTab: function(e) {
-        if (e.keycode === 9 ) {
+        if (e.keyCode === 9 ) {
           L.DomEvent.stop(e);
-
           if (e.target.className === "inputX") {
             this._inputY.focus();
           } else if (e.target.className === "inputY") {
