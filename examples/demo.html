@@ -14,10 +14,11 @@
 
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.css" />
 	<!--[if lte IE 8]><link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.ie.css" /><![endif]-->
-
+	<script type="text/javascript" src="../proj4js/proj4js-combined.js"></script>
 	<script type="text/javascript" src="http://cdn.leafletjs.com/leaflet-0.6.2/leaflet.js"></script>
-	<script type="text/javascript" src="../dist/Leaflet.Coordinates-0.1.3.min.js"></script>
-	<link rel="stylesheet" href="../dist/Leaflet.Coordinates-0.1.3.css"/>
+	<script type="text/javascript" src="../src/Control.Coordinates.js"></script>
+	<script type="text/javascript" src="../src/util/NumberFormatter.js"></script>
+	<link rel="stylesheet" href="../src/Control.Coordinates.css"/>
 	<!--[if lte IE 8]><link rel="stylesheet" href="../dist/Leaflet.Coordinates-0.1.3.ie.css" /><![endif]-->
 </head>
 <body>
@@ -37,12 +38,30 @@
 		//add standard controls
 		L.control.coordinates().addTo(map);
 		//add configured controls
+		var converter=function(lng,lat,reverse)
+	        {
+			Proj4js.defs["EPSG:23031"] = "+proj=utm +zone=31 +ellps=intl +towgs84=-87,-98,-121,0,0,0,0 +units=m +no_defs";
+			var src = new Proj4js.Proj("EPSG:4326");
+			var dst = new Proj4js.Proj("EPSG:23031");
+			
+			var p= new  Proj4js.Point(lng,lat);//La funcio es longitud,latitud!!!
+			if (reverse)
+			{
+				Proj4js.transform(dst,src,p);
+			}
+			else
+			{	
+				Proj4js.transform(src,dst,p);
+			}
+			return {'y': p.y,'x': p.x};
+		};
 		L.control.coordinates({
 			position:"bottomleft",
 			decimals:2,
 			decimalSeperator:",",
 			labelTemplateLat:"Latitude: {y}",
-			labelTemplateLng:"Longitude: {x}"
+			labelTemplateLng:"Longitude: {x}",
+			coordinateConverter:converter
 		}).addTo(map);
 		L.control.coordinates({
 			position:"topright",
