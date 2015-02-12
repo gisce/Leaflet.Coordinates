@@ -26,7 +26,8 @@ L.Control.Coordinates = L.Control.extend({
 	        useLatLngOrder: false,
         	//if true user given coordinates are centered directly
 	        centerUserCoordinates:false,
-	        leafletImagesPath: "/assets/images/"
+	        leafletImagesPath: "/assets/images/",
+            className:'uiElement'
 	},
 
 	onAdd: function(map) {
@@ -36,13 +37,13 @@ L.Control.Coordinates = L.Control.extend({
 		options = this.options;
 
         	//label containers
-		this._labelcontainer = L.DomUtil.create("div", "uiElement label", container);
+		this._labelcontainer = L.DomUtil.create("div", this.className+" label", container);
 		this._label = L.DomUtil.create("span", "labelFirst", this._labelcontainer);
 
 		//L.Icon.Default.imagePath = options.leafletImagesPath;
 
 		//input containers
-		this._inputcontainer = L.DomUtil.create("div", "uiElement input uiHidden", container);
+		this._inputcontainer = L.DomUtil.create("div", this.className+" input uiHidden", container);
 		if (options.useLatLngOrder) {
 			this._inputY = this._createInput("inputY", this._inputcontainer);
 			this._inputX = this._createInput("inputX", this._inputcontainer);
